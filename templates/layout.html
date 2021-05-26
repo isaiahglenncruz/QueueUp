@@ -49,8 +49,23 @@
                   </div>
                 </div>
               [[else:]]
-                <a class="button is-link" href="[[=URL('auth/register')]]">Sign up</a>
-                <a class="button is-success" href="[[=URL('auth/login')]]">Log in</a>
+              <div id="navbarMenu" class="navbar-menu">
+                <div class="navbar-end">
+                    <div class="tabs is-right">
+                        <ul>
+                            <li><a href="" style="color: white;">Home</a></li>
+                            <li><a href="" style="color: white;">Log In</a></li>
+                            <li><a href="" style="color: white;">Register</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+                <!-- <span href="[[=URL('auth/register')]]">Sign Up</span>
+                <span href="[[=URL('auth/login')]]">Log in</span> -->
+
+                <!-- <a class="button" href="[[=URL('auth/register')]]">Sign up</a>
+                <a class="button" href="[[=URL('auth/login')]]">Log in</a> -->
               [[pass]]
             </div>
           </div>
