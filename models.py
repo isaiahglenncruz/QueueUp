@@ -33,4 +33,18 @@ db.define_table(
     Field('dob'),
 )
 
+db.define_table(
+    'lobbies',
+    Field('leader'),
+    Field('bio'),
+    Field('player1'),
+    Field('player2'),
+    Field('player3'),
+    Field('player4'),
+    Field('rank'),
+    Field('region'),
+    Field('playstyle'),
+    Field('microphone'),
+)
+
 db.commit()

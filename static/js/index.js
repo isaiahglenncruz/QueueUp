@@ -10,6 +10,12 @@ let init = (app) => {
     // This is the Vue data.
     app.data = {
         // Complete as you see fit.
+        add_new_lobby: false,
+        add_rank: "",      // Should be grabbed by default soon
+        add_region: "",     // Should be grabbed by default soon
+        add_playstyle:  "", 
+        add_bio: "",
+        lobbies: [],
     };
 
     app.enumerate = (a) => {
@@ -19,10 +25,54 @@ let init = (app) => {
         return a;
     };
 
+    app.reset_form = function () {
+        app.vue.add_rank = "";
+        app.vue.add_region = "";
+        app.vue.add_playstyle = "";
+        app.vue.add_bio = "";
+    };
+
+    app.complete = (lobbies) => {
+        lobbies.map((lob) => {
+            console.log(lob);
+            lob.members = ["empty1", "empty2", "empty3", "empty4"];
+            lob.leader = "no leader";
+        })
+    }
+
+    app.set_add_status = function (new_status) {
+        app.vue.add_new_lobby = new_status;
+    }
+
+    app.add_lobby = function () {
+        // submit form data to server
+        axios.post(add_lobby_url, {
+            rank: app.vue.add_rank,
+            region: app.vue.add_region,
+            playstyle: app.vue.add_playstyle,
+            bio: app.vue.add_bio,
+        }).then(function (response) {
+        app.vue.lobbies.push({
+            // add attributes from server to local array
+            id: response.data.id,
+            leader: response.data.leader,
+            members: response.data.members, // will be an array of members
+            rank: app.vue.add_rank,
+            region: app.vue.add_region,
+            playstyle: app.vue.add_playstyle,
+            bio: app.vue.add_bio,
+        });
+            app.enumerate(app.vue.lobbies);
+            app.reset_form();
+            app.set_add_status(false);
+        });
+    };
 
     // This contains all the methods.
     app.methods = {
         // Complete as you see fit.
+        add_lobby: app.add_lobby,
+        set_add_status: app.set_add_status,
     };
 
     // This creates the Vue instance.
@@ -34,8 +84,13 @@ let init = (app) => {
 
     // And this initializes it.
     app.init = () => {
-        // Put here any initialization code.
         // Typically this is a server GET call to load the data.
+        axios.get(load_lobbies_url).then(function (response) {
+            let lobbies = response.data.lobbies;
+            app.enumerate(lobbies);
+            // app.complete(lobbies);
+            app.vue.lobbies = lobbies;
+        });
     };
 
     // Call to the initializer.

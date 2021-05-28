@@ -5,52 +5,120 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
 </head>
 
-<nav class="level p-2 mt-2 is-mobile">
-    <div class="level-item"></div>
-    <div class="level-item has-text-centered">
-      <div>
-        <figure class="image is-128x128">
-            <img class="is-rounded" src="https://lh3.googleusercontent.com/d/1oXZhuGX3cZcWJtApjzQDu-PF9banLRqj=s220?authuser=0">
-        </figure>
-      </div>
-    </div>
-    <div class="level-item has-text-centered">
-        <div class="title is-2 has-text-centered">
-            <p>In Valorant Queue</p>
+<style>
+    [v-cloak] {
+        display: none;
+    }
+</style>
+
+<div class="section" id="vue-target" v-cloak>
+    <!-- HEADER CODE -->
+    <nav class="level p-2 mt-2 is-mobile">
+        <div class="level-item"></div>
+        <div class="level-item has-text-centered">
+            <div>
+                <figure class="image is-128x128">
+                    <img class="is-rounded"
+                        src="https://lh3.googleusercontent.com/d/1oXZhuGX3cZcWJtApjzQDu-PF9banLRqj=s220?authuser=0">
+                </figure>
+            </div>
+        </div>
+        <div class="level-item has-text-centered">
+            <div class="title is-2 has-text-centered">
+                <p>In Valorant Queue</p>
+            </div>
+        </div>
+        <div class="level-item has-text-centered">
+            <button @click="set_add_status(true)" class="button is-success">Create New Lobby</button>
+        </div>
+        <div class="level-item"></div>
+    </nav>
+
+    <!-- ADD LOBBY FORM -->
+    <div v-if="add_new_lobby" class="container block">
+        <div class="title"> Add Lobby</div>
+        <div class="form">
+            <div class="field">
+                <label class="label"> Rank </label>
+                <div class="control">
+                    <input type="text" v-model="add_rank" class="input">
+                </div>
+            </div>
+            <div class="field">
+                <label class="label"> Region </label>
+                <div class="control">
+                    <input type="text" v-model="add_region" class="input">
+                </div>
+            </div>
+            <div class="field">
+                <label class="label"> Playstyle </label>
+                <div class="control">
+                    <input type="text" v-model="add_playstyle" class="input">
+                </div>
+            </div>
+            <div class="field">
+                <label class="label"> Bio </label>
+                <div class="control">
+                    <input type="text" v-model="add_bio" class="input">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input type="submit" @click="add_lobby" value="Add" class="button is-primary">
+                    <input type="submit" @click="set_add_status(false)" value="Cancel" class="button is-warning">
+                </div>
+            </div>
         </div>
     </div>
-    <div class="level-item has-text-centered">
-        <button class="button is-success">Create New Lobby</button>
-    </div>
-    <div class="level-item"></div>
-  </nav>
 
-  <div class="block m-2 mx-4 p-2">
-      <div class="tile is-ancestor">
-          <!-- FOR LOOP -->
-          <div class="tile is-parent is-vertical is-4">
-                <article class="tile is-child notification is-grey is-6">
-                    <p class="title" style="text-align: center;">LEADER NAME</p>
-                    <p class="subtitle" style="text-align: center;">RANK</p>
+
+    <!-- LOBBY CODE -->
+    <div class="block m-2 mx-4 p-2">
+        <div class="tile is-ancestor">
+            <!-- FOR LOOP -->
+            <div v-for="l in lobbies" class="tile is-parent is-vertical is-4">
+                <article class="tile is-child notification is-dark">
+                    <p class="title" style="text-align: center;">{{l.leader}}</p>
+                    <p class="subtitle" style="text-align: center;">{{l.rank}}</p>
                     <div style="text-align: center">
                         <article class="button is-danger">JOIN LOBBY</button>
                     </div>
                     <div class="m-2 p-2">
                         <p class="subtitle" style="text-align: center;">MEMBERS</p>
                         <div class="block">
-                            <div class="tile is-ancestor">
-                                <div class="tile is-parent is-vertical">
-                                    <!-- FOR LOOP -->
-                                    <article class="tile is-child notification is-danger">
-                                        <p>MEMBER</p>
-                                    </article>
-                                </div>
-                            </div>
+                            <table class="table is-fullwidth">
+                                <tr>
+                                    <th> {{l.player1}} </th>
+                                    <th> {{l.player2}} </th>
+                                </tr>
+                                <tr>
+                                    <th> {{l.player3}} </th>
+                                    <th> {{l.player4}} </th>
+                                </tr>
+                            </table>
                         </div>
                     </div>
+                    <div class="block">
+                        <p class="subtitle pt-1" style="text-align: center;">
+                            <span>{{l.region}}</span> : <span>{{l.playstyle}}</span>
+                        </p>
+                        <p class="subtitle" style="text-align: center;">{{l.bio}}</p>
+                    </div>
                 </article>
-          </div>
-      </div>
-  </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+[[block page_scripts]]
+<script>
+    let add_lobby_url = "[[=XML(add_lobby_url)]]";
+    let load_lobbies_url = "[[=XML(load_lobbies_url)]]";
+
+</script>
+<script src="static/js/index.js"></script>
+[[end]]
