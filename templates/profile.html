@@ -1,43 +1,192 @@
 [[extend 'layout.html']]
 
-<section class="section notification is-grey-darker">
-    <div class="tile is-ancestor">
-        <div class="tile">
-            <div class="tile is-3">
-                <div class="tile is-parent is-vertical">
-                    <article class="tile is-child notification is-danger">
-                        <p>pfp</p>
-                        <p style="text-align: center"><img src="https://drive.google.com/thumbnail?id=1hayho3LlzboGG4XPIJTbqb7M0vru0Wem" style="width: 40%; margin-left:auto; margin-right:auto"></p>
-                    </article>
-                    <article class="tile is-child notification is-primary">
-                        <p>social elo icons not working</p>
-                        <span class="icon has-text-info" style="padding: 15px;">
-                            <!-- FOUR ICONS HERE FOR SOCIAL RATING -->
-                            <i class="fa fa-thumbs-up fa-2x"></i>
-                            <i class="fa fa-thumbs-up fa-2x"></i>
-                            <i class="fa fa-thumbs-up fa-2x"></i>
-                            <i class="fa fa-thumbs-up fa-2x"></i>
+<style>
+[v-cloak] {
+        display: none;
+}
+.input {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+p {
+  margin-left: 10px;
+}
+b {
+  margin-left: 10px;
+}
+i {
+  margin-top: 20px;
+}
+.button {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+.text-center {
+  text-align: center;
+}
+</style>
+
+<div class="section" id="vue-target" v-cloak>
+    <div class="columns is-mobile">
+        <div class="column is-8 is-offset-2">
+          <p class="title" style="text-align: center;">View and Edit Your Profile</p>
+            <div class="columns is-mobile">
+              <div class="column">
+
+                <div class="field">
+                  <label class="label">Email</label>
+                  <div class="control has-icons-left">
+                    <input class="input" v-model="change_email" type="email" placeholder="[[=user_info.email]]">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-envelope"></i>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="label">First Name</label>
+                  <div class="control has-icons-left">
+                    <input class="input" v-model="change_first_name" type="text" placeholder="[[=user_info.first_name]]">
+                    <span class="icon is-small is-left">
+                      <i class="fa fa-check-square-o"></i>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="label">Last Name</label>
+                  <div class="control has-icons-left">
+                    <input class="input" type="text" v-model="change_last_name" placeholder="[[=user_info.last_name]]">
+                    <span class="icon is-small is-left">
+                      <i class="fa fa-check-square-o"></i>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <div class="control">
+                  <label class="label">Bio</label>
+                  <textarea v-model="add_bio" class="textarea" style="margin-top: 17px; margin-bottom: 17px;" placeholder="[[=profile_info.bio]]"></textarea>
+                  </div>
+                </div>
+
+                <nav class="level is-mobile">
+                  <div class="level-left">
+                    <div class="level-item">
+                      <div class="field">
+                        <label class="label">Region</label>
+                        <div class="control has-icons-left">
+                          <div class="select">
+                            <select v-model="change_region" >
+                              <option disabled>Please Choose One</option>
+                              <option>NA West</option>
+                              <option>NA East</option>
+                              <option>NA Central</option>
+                            </select>
+                          </div>
+                          <span class="icon is-small is-left">
+                            <i class="fa fa-globe" style="margin-bottom: 20px;"></i>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="level-item has-text-centered">
+                    <div class="control">
+                      <label class="label">Microphone</label>
+                      <label class="radio">
+                        <input type="radio" value=true v-model="mic">
+                        Yes
+                      </label>
+                      <label class="radio">
+                        <input type="radio" value=false v-model="mic">
+                        No
+                      </label>
+                    </div>
+                  </div>
+                </nav>
+              </div>
+
+              <div class="column">
+
+                <div v-if="add_game_status" class="container block">
+
+                  <div class="field">
+                    <div class="control">
+                      <label class="label">Add Game</label>
+                      <div class="control has-icons-left">
+                        <div class="select" style="margin-top: 10px;">
+                          <select v-model="add_game_name">
+                            <option disabled>Please Choose One</option>
+                            <option>Valorant</option>
+                            <option>League of Legends</option>
+                            <option>CS:GO</option>
+                          </select>
+                        </div>
+                        <span class="icon is-small is-left">
+                          <i class="fa fa-gamepad"></i>
                         </span>
-                    </article>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <div class="control">
+                      <label class="label">Add Your Gamer Tag</label>
+                      <input class="input" v-model="add_gamertag" type="text" placeholder="Ex. thelegend27" style="margin-top: 20px;">
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <div class="control">
+                      <label class="label">Add Your Rank In-Game</label>
+                      <input class="input" v-model="add_game_rank" type="text" placeholder="Ex. Gold 2">
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <div class="control">
+                      <input type="submit" @click="add_game" @click="set_add_game_status(false)" value="Add" class="button is-primary">
+                      <input type="submit" @click="set_add_game_status(false)" value="Cancel" class="button is-warning">
+                    </div>
+                  </div>
+
+                </div>
+
+                <div v-else class="container block">
+
+                  <div class="field">
+                    <div class="control has-icons-left">
+                      <div class="text-center">
+                        <input @click="set_add_game_status(true)" type="submit" value="Add One of Your Games!" class="button is-primary">
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <div class="text-center">
+                        <input type="submit" @click="change_profile" value="Submit Changes" class="button is-danger">
+                    </div>
                 </div>
             </div>
-            <div class="tile">
-                <article class="tile is-child"> <!-- scuffed as fuck ill fix this later -->
-                    <p class="title">USERNAME</p>
-                    <span>
-                        <p>BIO</p><a class="button"><span class="icon"><i class="fa fa-fw fa-pencil"></i></span> <span>Edit</span></a>
-                    </span>
-                    <span>
-                        <p>GAMERTAG</p><a class="button"><span class="icon"><i class="fa fa-fw fa-pencil"></i></span> <span>Edit</span></a>
-                    </span>
-                    <span>
-                        <p>REGION</p><a class="button"><span class="icon"><i class="fa fa-fw fa-pencil"></i></span> <span>Edit</span></a>
-                    </span>
-                    <span>
-                        <p>MICROPHONE ICON</p><a class="button"><span class="icon"><i class="fa fa-fw fa-pencil"></i></span> <span>Edit</span></a>
-                    </span>                    
-                </article>
-            </div>
+
         </div>
     </div>
-</section>
+</div>
+
+[[block page_scripts]]
+
+<script>
+    let change_profile_url = "[[=XML(change_profile_url)]]";
+    let add_game_url = "[[=XML(add_game_url)]]";
+</script>
+<script src="js/profile.js">
+</script>
+[[end]]

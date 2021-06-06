@@ -39,10 +39,10 @@ db.define_table(
     Field('region', default="NA West"), # maybe don't want this as default
     Field('bio'),
     Field('mic'),
-    Field('attribute1'),
-    Field('attribute2'),
-    Field('attribute3'),
-    Field('attribute4'),
+    Field('tiltproof', 'integer', default=0),
+    Field('leader', 'integer', default=0),
+    Field('fun', 'integer', default=0),
+    Field('communicative', 'integer', default=0),
 )
 
 db.define_table(
@@ -51,7 +51,6 @@ db.define_table(
     Field('game'),
     Field('gamertag'),
     Field('rank'),
-    Field('role'),  # do we want this?
 )
 
 db.define_table(

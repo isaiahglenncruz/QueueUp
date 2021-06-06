@@ -1,4 +1,4 @@
-"""
+""" ALI CONTROLLER
 This file defines actions, i.e. functions the URLs are mapped into
 The @action(path) decorator exposed the function at URL:
 
@@ -50,6 +50,77 @@ def lobbies():
         # URLS used for callbacks and HTTP requests
         add_lobby_url = URL('add_lobby', signer=url_signer),
         load_lobbies_url = URL('load_lobbies', signer=url_signer)
+    )
+
+@action('profile')
+@action.uses(auth.user, url_signer, db, 'profile.html')
+def profile():
+    print("profile page reached")
+    user_info = db(db.auth_user.email == get_user_email()).select().first()
+    
+    if not db(db.profiles.user == user_info.id).select().first():
+        db.profiles.insert(
+            user=user_info.id,
+            region=db.profiles.region.default,
+            bio=db.profiles.bio.default,
+            mic=db.profiles.mic.default,
+            tiltproof=db.profiles.tiltproof.default,
+            leader=db.profiles.leader.default,
+            fun=db.profiles.fun.default,
+            communicative=db.profiles.communicative.default,
+            )      
+    
+    profile_info = db(db.profiles.user == user_info.id).select().first()
+
+    return dict(
+        user_info=user_info,
+        profile_info=profile_info,
+        change_profile_url = URL('change_profile', signer=url_signer),
+        add_game_url = URL('add_game', signer=url_signer),
+    )
+
+@action('change_profile', method="POST")
+@action.uses(auth.user, url_signer.verify(), db)
+def change_profile():
+    print("changing the profile apparently")
+    user_info = db(db.auth_user.email == get_user_email()).select().first()
+    profile_info = db(db.profiles.user == user_info.id).select().first()
+    auth_user_id = db.auth_user.update_or_insert(
+        db.auth_user.email == get_user_email(),
+        email = request.json.get('email') if request.json.get('email') != "" else user_info.email,
+        first_name = request.json.get('first_name') if request.json.get('first_name') != "" else user_info.first_name,
+        last_name = request.json.get('last_name') if request.json.get('last_name') != "" else user_info.last_name,
+    )
+    profile_id = db.profiles.update_or_insert(
+        db.profiles.user == user_info.id,
+        region = request.json.get('region') if request.json.get('region') != "" else profile_info.region,
+        bio = request.json.get('bio') if request.json.get('bio') != "" else profile_info.bio,
+        mic = request.json.get('mic') if request.json.get('mic') is not None else profile_info.mic,
+    )
+    return dict(
+        auth_user_id=auth_user_id,
+        profile_id=profile_id,
+    )
+
+@action('add_game', method="POST")
+@action.uses(db, auth.user, url_signer.verify())
+def add_game():
+    print("adding some game data")
+    user_info = db(db.auth_user.email == get_user_email()).select().first()
+    profile_info = db(db.profiles.user == user_info.id).select().first()
+    game_to_add = request.json.get('game')
+    print(game_to_add)
+
+    game_data = db.game_data.update_or_insert(
+        (db.game_data.profile == profile_info.id) & (db.game_data.game == game_to_add),
+        profile = profile_info.id,
+        game = game_to_add,
+        gamertag = request.json.get('gamertag'),
+        rank = request.json.get('rank'),
+    )
+
+    return dict(
+        game_data=game_data,
     )
 
 @action('add_lobby', method="POST")
