@@ -54,30 +54,44 @@ def lobbies():
 
 @action('add_lobby', method="POST")
 @action.uses(auth.user, url_signer.verify(), db)
-def add_contact():
+def add_lobby():
     r = db(db.auth_user.email == get_user_email()).select().first()
     lobby_leader = r.first_name + " " + r.last_name if r is not None else "Unknown"
     members = ["player1", "player2", "player3", "player4"]
     id = db.lobbies.insert(
+        game = "Valorant",
         leader = lobby_leader, # get this with get_user probably
         bio = request.json.get('bio'),
         rank = request.json.get('rank'),
         region = request.json.get('region'),
         playstyle = request.json.get('playstyle'),
-        player1 = "player1",
-        player2 = "player2",
-        player3 = "player3",
-        player4 = "player4",
+        player1 = "available",
+        player2 = "available",
+        player3 = "available",
+        player4 = "available",
         microphone = "yes",
     )
+    lob = db(db.lobbies.id == id).select().as_list()[0] #could this cause errors? not sure
+    print("lob evaluates to: ", lob)
+    lob['show_url'] = URL('in_lobby', lob['id'], signer=url_signer)
     return dict(
         id=id,
         leader=lobby_leader,
-        members=members,
+        url=lob['show_url'],
     )
 
 @action('load_lobbies')
 @action.uses(url_signer.verify(), db)
 def load_lobbies():
     lobbies = db(db.lobbies).select().as_list()
+    for r in lobbies:
+        r['show_url'] = URL('in_lobby', r['id'], signer=url_signer)
     return dict(lobbies=lobbies)
+
+@action('in_lobby/<lobby_id:int>')
+@action.uses(db, url_signer.verify(), 'in_lobby.html')
+def in_lobby(lobby_id=None):
+    print("in lobby page")
+    lob = db(db.lobbies.id == lobby_id).select().first()
+    # print("lob evaluates to: ", lob)
+    return dict(leader=("Not found" if lob is None else lob.leader))

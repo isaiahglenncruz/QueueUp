@@ -35,8 +35,11 @@ let init = (app) => {
     app.complete = (lobbies) => {
         lobbies.map((lob) => {
             console.log(lob);
-            lob.members = ["empty1", "empty2", "empty3", "empty4"];
-            lob.leader = "no leader";
+            //lob.leader = "no leader";
+            lob.player1 = "available";
+            lob.player2 = "available";
+            lob.player3 = "available";
+            lob.player4 = "available";
         })
     }
 
@@ -56,13 +59,14 @@ let init = (app) => {
             // add attributes from server to local array
             id: response.data.id,
             leader: response.data.leader,
-            members: response.data.members, // will be an array of members
+            show_url: response.data.url,
             rank: app.vue.add_rank,
             region: app.vue.add_region,
             playstyle: app.vue.add_playstyle,
             bio: app.vue.add_bio,
         });
             app.enumerate(app.vue.lobbies);
+            app.complete(app.vue.lobbies);
             app.reset_form();
             app.set_add_status(false);
         });
@@ -88,7 +92,7 @@ let init = (app) => {
         axios.get(load_lobbies_url).then(function (response) {
             let lobbies = response.data.lobbies;
             app.enumerate(lobbies);
-            // app.complete(lobbies);
+            app.complete(lobbies);
             app.vue.lobbies = lobbies;
         });
     };
