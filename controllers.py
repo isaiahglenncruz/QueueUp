@@ -33,6 +33,7 @@ from .models import get_user_email
 
 url_signer = URLSigner(session)
 
+############################# HOME AND PROFILE FUNCTIONS ###########################
 @action('index')
 @action.uses(auth.user, url_signer, db, 'index.html')
 def index():
@@ -113,6 +114,7 @@ def add_game():
         game_data=game_data,
     )
 
+############################# BEGINNING OF LOBBY FUNCTIONS ###########################
 
 @action('lobbies')
 @action.uses(auth.user, db, 'lobbies.html')
@@ -121,7 +123,8 @@ def lobbies():
     return dict(
         # URLS used for callbacks and HTTP requests
         add_lobby_url = URL('add_lobby', signer=url_signer),
-        load_lobbies_url = URL('load_lobbies', signer=url_signer)
+        load_lobbies_url = URL('load_lobbies', signer=url_signer),
+        get_players_url = URL('get_players', signer=url_signer),
     )
 
 @action('add_lobby', method="POST")
@@ -129,18 +132,15 @@ def lobbies():
 def add_lobby():
     r = db(db.auth_user.email == get_user_email()).select().first()
     lobby_leader = r.first_name + " " + r.last_name if r is not None else "Unknown"
-    members = ["player1", "player2", "player3", "player4"]
+    profile_info = db(db.profiles.user == r.id).select().first()
+    print("r_id is :", r.id)
     id = db.lobbies.insert(
         game = "Valorant",
-        leader = lobby_leader, # get this with get_user probably
+        leader = r.id, # get this with get_user probably
         bio = request.json.get('bio'),
         rank = request.json.get('rank'),
         region = request.json.get('region'),
         playstyle = request.json.get('playstyle'),
-        player1 = "available",
-        player2 = "available",
-        player3 = "available",
-        player4 = "available",
     )
     lob = db(db.lobbies.id == id).select().as_list()[0] #could this cause errors? not sure
     print("lob evaluates to: ", lob)
@@ -155,22 +155,82 @@ def add_lobby():
 @action.uses(url_signer.verify(), db)
 def load_lobbies():
     lobbies = db(db.lobbies).select().as_list()
+    r = db(db.auth_user.email == get_user_email()).select().first()
+    lobby_leader = r.first_name + " " + r.last_name if r is not None else "Unknown"
+    print("lobbies : ", lobbies)
     for r in lobbies:
         r['show_url'] = URL('in_lobby', r['id'], signer=url_signer)
+        lead_id = r['leader']
+        lead_user = db(db.auth_user.id == lead_id).select().first()
+        lead_name = lead_user.first_name + " " + lead_user.last_name if lead_user is not None else "Unknown"
+        r['leader'] = lead_name
+        if r['player1']:
+            curr = r['player1']
+            prof = db(db.profiles.id == curr).select().first()
+            user = db(db.auth_user.id == prof.user).select().first()
+            name = user.first_name + " " + user.last_name if user is not None else "available"
+            print("name extracted is 1: ", name)
+            r['player1'] = name
+        if r['player2']:
+            curr = r['player2']
+            prof = db(db.profiles.id == curr).select().first()
+            user = db(db.auth_user.id == prof.user).select().first()
+            name = user.first_name + " " + user.last_name if user is not None else "available"
+            print("name extracted is 2: ", name)
+            r['player2'] = name
+        if r['player3']:
+            curr = r['player3']
+            prof = db(db.profiles.id == curr).select().first()
+            user = db(db.auth_user.id == prof.user).select().first()
+            name = user.first_name + " " + user.last_name if user is not None else "available"
+            print("name extracted is 3: ", name)
+            r['player3'] = name
+        if r['player4']:
+            curr = r['player4']
+            prof = db(db.profiles.id == curr).select().first()
+            user = db(db.auth_user.id == prof.user).select().first()
+            name = user.first_name + " " + user.last_name if user is not None else "available"
+            print("name extracted is: ", name)
+            r['player4'] = name
     return dict(lobbies=lobbies)
+
+# @action('get_players')
+# @action.uses(url_signer.verify(), db)
+# def get_players():
+#     lobbies = db(db.lobbies).select().as_list()
+#     return dict()
+
+############################# IN LOBBY FUNCTIONS  ###########################
 
 @action('in_lobby/<lobby_id:int>')
 @action.uses(auth.user, url_signer, db, url_signer.verify(), 'in_lobby.html')
 def in_lobby(lobby_id=None):
     print("in lobby page")
     lob = db(db.lobbies.id == lobby_id).select().first()
-    # print("lob evaluates to: ", lob)
+    r = db(db.auth_user.email == get_user_email()).select().first() # get curr user db
+    profile_info = db(db.profiles.user == r.id).select().first() # get curr profile db
+
+    print("inserting: ", profile_info.id)
+    if r.id == lob.leader:
+        print("leader is joining pls do nothing else")
+    elif lob.player1 is None:
+        db(db.lobbies.id == lobby_id).update(player1=profile_info.id)
+    elif lob.player2 is None:
+        db(db.lobbies.id == lobby_id).update(player2=profile_info.id)
+    elif lob.player3 is None:
+        db(db.lobbies.id == lobby_id).update(player3=profile_info.id)
+    elif lob.player4 is None:
+        db(db.lobbies.id == lobby_id).update(player4=profile_info.id)
+    else:
+        print("LOBBY FULL CANNOT JOIN REMOVE BUTTON")
+    print("lob evaluates to: ", lob)
     return dict(
         load_messages_url = URL('load_messages', signer=url_signer),
         add_message_url = URL('add_message', signer=url_signer),
         # probably want to return url for post lobby page here
         # also want to implement a leave_lobby_url that moves pages maybe and removes from lobby
     )
+
 
 @action('load_messages')
 @action.uses(url_signer.verify(), db)

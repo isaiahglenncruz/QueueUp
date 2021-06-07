@@ -12,6 +12,8 @@ let init = (app) => {
         // Complete as you see fit.
         message: "",
         messages: [],
+        lobby_data: [], // think should be a hash -- look into in java
+        // user 1: {name: ___ rank: ___ attribute: ___ att2: ___}
     };
 
     app.enumerate = (a) => {

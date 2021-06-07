@@ -56,12 +56,12 @@ db.define_table(
 db.define_table(
     'lobbies',
     Field('game'),
-    Field('leader'), # change to a reference
+    Field('leader', 'reference profiles'), # change to a reference
     Field('bio'),
-    Field('player1'), #
-    Field('player2'), # Might need to change the way we do these bc its not portable
-    Field('player3'), # Between games, unless we just do games w max 5 people and hide them which would work
-    Field('player4'), #
+    Field('player1', 'reference profiles'), #
+    Field('player2', 'reference profiles'), # Might need to change the way we do these bc its not portable
+    Field('player3', 'reference profiles'), # Between games, unless we just do games w max 5 people and hide them which would work
+    Field('player4', 'reference profiles'), #
     Field('rank'),
     Field('region'),
     Field('playstyle'),

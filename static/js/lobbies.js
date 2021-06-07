@@ -36,10 +36,10 @@ let init = (app) => {
         lobbies.map((lob) => {
             console.log(lob);
             //lob.leader = "no leader";
-            lob.player1 = "available";
-            lob.player2 = "available";
-            lob.player3 = "available";
-            lob.player4 = "available";
+            // lob.player1 = "available";
+            // lob.player2 = "available";
+            // lob.player3 = "available";
+            // lob.player4 = "available";
         })
     }
 
@@ -49,12 +49,14 @@ let init = (app) => {
 
     app.add_lobby = function () {
         // submit form data to server
+        
         axios.post(add_lobby_url, {
             rank: app.vue.add_rank,
             region: app.vue.add_region,
             playstyle: app.vue.add_playstyle,
             bio: app.vue.add_bio,
         }).then(function (response) {
+        console.log(response.data.leader);
         app.vue.lobbies.push({
             // add attributes from server to local array
             id: response.data.id,
@@ -66,10 +68,16 @@ let init = (app) => {
             bio: app.vue.add_bio,
         });
             app.enumerate(app.vue.lobbies);
-            app.complete(app.vue.lobbies);
             app.reset_form();
             app.set_add_status(false);
+            // jump to in lobby page here
+            var last = app.vue.lobbies[app.vue.lobbies.length -1]
+            console.log("last : ", last.show_url)
+            let a = document.createElement('a');
+            a.href = last.show_url;
+            a.click();
         });
+        
     };
 
     // This contains all the methods.

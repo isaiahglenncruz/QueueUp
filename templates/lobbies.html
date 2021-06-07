@@ -101,12 +101,16 @@
                                 <div class="block">
                                     <table class="table is-fullwidth">
                                         <tr>
-                                            <th> 1: {{l.player1}} </th>
-                                            <th> 2: {{l.player2}} </th>
+                                            <th v-if="l.player1"> 1: {{l.player1}} </th>
+                                            <th v-else> 1: available</th>
+                                            <th v-if="l.player2"> 2: {{l.player2}} </th>
+                                            <th v-else> 2: available</th>
                                         </tr>
                                         <tr>
-                                            <th> 3: {{l.player3}} </th>
-                                            <th> 4: {{l.player4}} </th>
+                                            <th v-if="l.player3"> 3: {{l.player3}} </th>
+                                            <th v-else> 3: available</th>
+                                            <th v-if="l.player4"> 4: {{l.player4}} </th>
+                                            <th v-else> 4: available</th>
                                         </tr>
                                     </table>
                                 </div>
@@ -166,6 +170,7 @@
 <script>
     let add_lobby_url = "[[=XML(add_lobby_url)]]";
     let load_lobbies_url = "[[=XML(load_lobbies_url)]]";
+    let get_players_url = "[[=XML(get_players_url)]]";
 
 </script>
 <script src="js/lobbies.js"></script>
