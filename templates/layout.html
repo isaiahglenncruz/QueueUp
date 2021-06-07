@@ -7,6 +7,8 @@
     <link rel="shortcut icon" href="data:image/x-icon;base64,AAABAAEAAQEAAAEAIAAwAAAAFgAAACgAAAABAAAAAgAAAAEAIAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAAAA=="/>
     <link rel="stylesheet" href="css/bulma.css">
     <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.css">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
     [[block page_head]]<!-- individual pages can customize header here -->[[end]]
   </head>
   <body>
@@ -41,7 +43,7 @@
                     [[=globals().get('user').get('email')]]
                   </a>
                   <div class="navbar-dropdown">
-                    <a class="navbar-item" href="[[=URL('auth/profile')]]">Profile</a>
+                    <a class="navbar-item" href="[[=URL('profile')]]">Edit Profile</a>
                     <a class="navbar-item" href="[[=URL('auth/logout')]]">Logout</a>
                     
                     <!-- <a class="navbar-item" href="[[=URL('auth/change_password')]]">Change Password</a></li> -->
@@ -49,8 +51,8 @@
                   </div>
                 </div>
               [[else:]]
-                <a class="button is-link" href="[[=URL('auth/register')]]">Sign up</a>
-                <a class="button is-success" href="[[=URL('auth/login')]]">Log in</a>
+                <a class="button" href="[[=URL('auth/register')]]">Sign up</a>
+                <a class="button" href="[[=URL('auth/login')]]">Log in</a>
               [[pass]]
             </div>
           </div>

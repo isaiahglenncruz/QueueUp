@@ -17,107 +17,105 @@
     }
 </style>
 
-<body>
-    <div class="section" id="vue-target" v-cloak>
-        <!-- HEADER CODE -->
-        <nav class="level p-2 mt-2 is-mobile">
-            <div class="level-item"></div>
-            <div class="level-item has-text-centered">
-                <div>
-                    <figure class="image is-128x128">
-                        <img class="is-rounded"
-                            src="https://lh3.googleusercontent.com/d/1oXZhuGX3cZcWJtApjzQDu-PF9banLRqj=s220?authuser=0">
-                    </figure>
-                </div>
+<div class="section" id="vue-target" v-cloak>
+    <!-- HEADER CODE -->
+    <nav class="level p-2 mt-2 is-mobile">
+        <div class="level-item"></div>
+        <div class="level-item has-text-centered">
+            <div>
+                <figure class="image is-128x128">
+                    <img class="is-rounded"
+                        src="https://lh3.googleusercontent.com/d/1oXZhuGX3cZcWJtApjzQDu-PF9banLRqj=s220?authuser=0">
+                </figure>
             </div>
-            <div class="level-item has-text-centered">
-                <div class="title is-2 has-text-centered">
-                    <p>In Valorant Queue</p>
-                </div>
+        </div>
+        <div class="level-item has-text-centered">
+            <div class="title is-2 has-text-centered">
+                <p>In Valorant Queue</p>
             </div>
-            <div class="level-item has-text-centered">
-                <button @click="set_add_status(true)" class="button is-success">Create New Lobby</button>
-            </div>
-            <div class="level-item"></div>
-        </nav>
+        </div>
+        <div class="level-item has-text-centered">
+            <button @click="set_add_status(true)" class="button is-success">Create New Lobby</button>
+        </div>
+        <div class="level-item"></div>
+    </nav>
 
-        <!-- ADD LOBBY FORM -->
-        <div v-if="add_new_lobby" class="container block">
-            <div class="title"> Add Lobby</div>
-            <div class="form">
-                <div class="field">
-                    <label class="label"> Rank </label>
-                    <div class="control">
-                        <input type="text" v-model="add_rank" class="input">
-                    </div>
+    <!-- ADD LOBBY FORM -->
+    <div v-if="add_new_lobby" class="container block">
+        <div class="title"> Add Lobby</div>
+        <div class="form">
+            <div class="field">
+                <label class="label"> Rank </label>
+                <div class="control">
+                    <input type="text" v-model="add_rank" class="input">
                 </div>
-                <div class="field">
-                    <label class="label"> Region </label>
-                    <div class="control">
-                        <input type="text" v-model="add_region" class="input">
-                    </div>
+            </div>
+            <div class="field">
+                <label class="label"> Region </label>
+                <div class="control">
+                    <input type="text" v-model="add_region" class="input">
                 </div>
-                <div class="field">
-                    <label class="label"> Playstyle </label>
-                    <div class="control">
-                        <input type="text" v-model="add_playstyle" class="input">
-                    </div>
+            </div>
+            <div class="field">
+                <label class="label"> Playstyle </label>
+                <div class="control">
+                    <input type="text" v-model="add_playstyle" class="input">
                 </div>
-                <div class="field">
-                    <label class="label"> Bio </label>
-                    <div class="control">
-                        <input type="text" v-model="add_bio" class="input">
-                    </div>
+            </div>
+            <div class="field">
+                <label class="label"> Bio </label>
+                <div class="control">
+                    <input type="text" v-model="add_bio" class="input">
                 </div>
-                <div class="field">
-                    <div class="control">
-                        <input type="submit" @click="add_lobby" value="Add" class="button is-primary">
-                        <input type="submit" @click="set_add_status(false)" value="Cancel" class="button is-warning">
-                    </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input type="submit" @click="add_lobby" value="Add" class="button is-primary">
+                    <input type="submit" @click="set_add_status(false)" value="Cancel" class="button is-warning">
                 </div>
             </div>
         </div>
+    </div>
 
 
-        <!-- LOBBY CODE -->
-        <div class="block m-2 mx-4 p-2">
-            <div class="columns is-multiline is-desktop">
-                <!-- FOR LOOP -- CREATE COL AND TILE -->
-                <div v-if="lobbies.length == 0" class="container">
-                    <div class="title has-text-centered">
-                        <span> No Open Lobbies! Please Create One</span>
-                    </div>
+    <!-- LOBBY CODE -->
+    <div class="block m-2 mx-4 p-2">
+        <div class="columns is-multiline is-desktop">
+            <!-- FOR LOOP -- CREATE COL AND TILE -->
+            <div v-if="lobbies.length == 0" class="container">
+                <div class="title has-text-centered">
+                    <span> No Open Lobbies! Please Create One</span>
                 </div>
-                <div v-for="l in lobbies.slice().reverse()" class="column is-one-third">
-                    <div class="tile is-ancestor">
-                        <div class="tile is-parent is-vertical">
-                            <div class="tile is-child notification is-dark">
-                                <p class="title" style="text-align: center;">{{l.leader}}</p>
-                                <p class="subtitle" style="text-align: center;">{{l.rank}}</p>
-                                <div style="text-align: center">
-                                    <a class="button is-danger" :href="l.show_url">JOIN LOBBY</a>
-                                </div>
-                                <div class="m-2 p-2">
-                                    <p class="subtitle" style="text-align: center;">MEMBERS</p>
-                                    <div class="block">
-                                        <table class="table is-fullwidth">
-                                            <tr>
-                                                <th> 1: {{l.player1}} </th>
-                                                <th> 2: {{l.player2}} </th>
-                                            </tr>
-                                            <tr>
-                                                <th> 3: {{l.player3}} </th>
-                                                <th> 4: {{l.player4}} </th>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                </div>
+            </div>
+            <div v-for="l in lobbies.slice().reverse()" class="column is-one-third">
+                <div class="tile is-ancestor">
+                    <div class="tile is-parent is-vertical">
+                        <div class="tile is-child notification is-dark">
+                            <p class="title" style="text-align: center;">{{l.leader}}</p>
+                            <p class="subtitle" style="text-align: center;">{{l.rank}}</p>
+                            <div style="text-align: center">
+                                <a class="button is-danger" :href="l.show_url">JOIN LOBBY</a>
+                            </div>
+                            <div class="m-2 p-2">
+                                <p class="subtitle" style="text-align: center;">MEMBERS</p>
                                 <div class="block">
-                                    <p class="subtitle pt-1" style="text-align: center;">
-                                        <span>{{l.region}}</span> : <span>{{l.playstyle}}</span>
-                                    </p>
-                                    <p class="subtitle" style="text-align: center;">{{l.bio}}</p>
+                                    <table class="table is-fullwidth">
+                                        <tr>
+                                            <th> 1: {{l.player1}} </th>
+                                            <th> 2: {{l.player2}} </th>
+                                        </tr>
+                                        <tr>
+                                            <th> 3: {{l.player3}} </th>
+                                            <th> 4: {{l.player4}} </th>
+                                        </tr>
+                                    </table>
                                 </div>
+                            </div>
+                            <div class="block">
+                                <p class="subtitle pt-1" style="text-align: center;">
+                                    <span>{{l.region}}</span> : <span>{{l.playstyle}}</span>
+                                </p>
+                                <p class="subtitle" style="text-align: center;">{{l.bio}}</p>
                             </div>
                         </div>
                     </div>
@@ -125,7 +123,7 @@
             </div>
         </div>
     </div>
-</body>
+</div>
 
 
 
