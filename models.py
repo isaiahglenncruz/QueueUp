@@ -68,4 +68,13 @@ db.define_table(
     Field('microphone'),
 )
 
+db.define_table(
+    'messages',
+    Field('lobby', 'reference lobbies'),
+    Field('user', 'reference profiles'),
+    Field('name'),
+    Field('message'),
+)
+
+
 db.commit()
