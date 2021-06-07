@@ -43,7 +43,7 @@ def index():
     )
 
 @action('lobbies')
-@action.uses(auth.user, url_signer, db, 'lobbies.html')
+@action.uses(auth.user, db, 'lobbies.html')
 def lobbies():
     print("lobby page reached")
     return dict(
@@ -69,7 +69,6 @@ def add_lobby():
         player2 = "available",
         player3 = "available",
         player4 = "available",
-        microphone = "yes",
     )
     lob = db(db.lobbies.id == id).select().as_list()[0] #could this cause errors? not sure
     print("lob evaluates to: ", lob)
@@ -89,9 +88,35 @@ def load_lobbies():
     return dict(lobbies=lobbies)
 
 @action('in_lobby/<lobby_id:int>')
-@action.uses(db, url_signer.verify(), 'in_lobby.html')
+@action.uses(auth.user, url_signer, db, url_signer.verify(), 'in_lobby.html')
 def in_lobby(lobby_id=None):
     print("in lobby page")
     lob = db(db.lobbies.id == lobby_id).select().first()
     # print("lob evaluates to: ", lob)
-    return dict(leader=("Not found" if lob is None else lob.leader))
+    return dict(
+        load_messages_url = URL('load_messages', signer=url_signer),
+        add_message_url = URL('add_message', signer=url_signer),
+        # probably want to return url for post lobby page here
+        # also want to implement a leave_lobby_url that moves pages maybe and removes from lobby
+    )
+
+@action('load_messages')
+@action.uses(url_signer.verify(), db)
+def load_messages():
+    messages = db(db.messages).select().as_list() # this eventually needs to be for only messages in a given lobby
+    return dict(messages=messages)
+
+@action('add_message', method="POST")
+@action.uses(auth.user, url_signer.verify(), db)
+def add_message():
+    r = db(db.auth_user.email == get_user_email()).select().first()
+    name = r.first_name + " " + r.last_name if r is not None else "Unknown"
+    print("extracted name is: ", name)
+    id = db.messages.insert(
+        message=request.json.get('message'),
+        name=name,
+        # add lobby id
+        # add user reference
+    )
+    # eventually return the name of the user for html usage
+    return dict(id=id, name=name)

@@ -66,7 +66,14 @@ db.define_table(
     Field('rank'),
     Field('region'),
     Field('playstyle'),
-    Field('microphone'),
+)
+
+db.define_table(
+    'messages',
+    Field('lobby', 'reference lobbies'),
+    Field('user', 'reference profiles'),
+    Field('name'),
+    Field('message'),
 )
 
 db.commit()
