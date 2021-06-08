@@ -65,4 +65,44 @@ The general flow of the app is as follows:
 # Implementation
 Our implementations revolves around a few pages, centered around lobby interaction, and uses 4 databases in the process
 
+## Databases
 
+We have a profiles database that contains a reference to auth_user to keep py4web happy, and then the rest of the basic profile info we felt was key to core of the website. This information is filled when the user navigates to "edit profile", hence why we make it mandatory before finding lobbies to join
+
+Second, we have a game data table, which contains game specific information that is ultimately tied to a profile. This is crucial because we wan the information in each lobby to reflect the real game! This way users can store different information for each game they play, and update it easily in one place. Not everybody has the same rank or name across the games they play.
+
+Most crucially, we have a lobbies data table which acts as a storage contianer for users, and some personal state data. Each lobby is tied to a game, and the leader who created the lobby. From there, the leader fills the initial information, and the lobby can "hold" new users by storing their reference in players one through four. These players fields are updated frequently because users are free to hop between lobbies as they wish, but we ask for leaders to stay in their own lobby until all users have left, upon which they can close the lobby for good.
+
+Finally, we have the messages database, which simply stores all the chat messages sent amongst all the lobbies. Of course we do not want to display messages in incorrect lobbies, so we store the lobby they were sent in, and query with this data when shipping data to the client. 
+
+## Controller Functions 
+
+The mitochondria of our app is the controllers.py file which contains all of our server side python functions that serve requets, load pages, and interact with the databases. Here is a brief explanation of each "segment" of our controllers.py.
+
+### Profile and Index
+Users need somewhere to land when they open our app, so the index controller services our home page, and does little more.
+
+The following 4 controller functions are for editing profiles. The first services the actual html page for editing the profiles, and provides the URLs for the next three functions which do not service an HTML file. These functions are to edit elementary profile information, add game data, and load the game data to be displayed to the user.
+
+### Viewing Lobbies
+The bulk of our controlling goes in this chunk of functions. The lobbies controller mimics index, and serves the lobbies.html page which displays all of our lobbies. To add a lobby, the form users fill is sent to the add_lobby controller which reads in the json data from the axios request, and fills the lobbies database accordingly.
+
+ To display these new lobbies, the next controller function load_lobbies returns two arrays that are passed to the client. The first is a represenatation of the lobbies database, except it replaces each profile reference with the name of the profile, so the client knows what to display on the screen. It also returns an array of games that the current logged in user has signed up for, so that it can limit the user to joining and creating lobbies for games it has already added to its database. 
+
+ ### In Lobby Function
+The next logical progression from viewing lobbies is joining them! We have a function get_players which provides a similar functionality to load_lobbies. The in lobby page requires some more specific information about each user, so we provide it this infomration from this junction. This includes things like game specific data, microphone status, and more.
+
+The in_lobby function loads the html page, and because it is the function that leads users to the in lobby page, it also handles actually adding them into the lobby. Other than this, it just returns a plethora of data other in_lobby functions will need like URLs and current lobby, profile, and leader ids. 
+
+### Messaging, Ratings
+The next few functions are used to interact with the client to add messages to the messages table, and update ratings of users by other users. Each are rather simple, and do little more than addiding to or updating the database, and sending the correct messages back to the client
+
+### Leaving
+Finally, we don't want users to be stuck in an abyss, so we serviced leaving lobbies by removing them from the database and sending them back to the index page, though that step is done by the client. **Importantly, we really emphasize that lobby leaders should allow all users to leave the lobby before closing it, so the others do not run into problems.** Once lobby leaders remove a lobby, it is gone for good, and they are welcome to create a new one on the next occasion they want to play!
+
+## Client Side
+We have three pages that involve reactivity and Vue.js. The first is the edit profiles page, which handles toggling many different fields, displaying user information as they change it, and creating forms for our databases. 
+
+The second page is to display the lobbies, which retrieves the array of lobbies from the server, and displays them along with their information. This page will not upate automatically, so in order to see more lobbies users should refresh the page.
+
+Lastly, and the most reactive page, is the in lobby page. This page uses a simple but clever setInterval for loading the users of the lobby and the messages so that users can emulate a real time chat without the need for sockets or a persistent connection! There may be a better way to implement this, but for our purpose this works just fine. This client side page also handles the ratings of each user, and whenever they are updated it sends them to the server so it can update its databases. 
