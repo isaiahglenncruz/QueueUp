@@ -1,3 +1,0 @@
-Yessirski
-main branch
-ssss
