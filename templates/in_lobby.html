@@ -1,0 +1,207 @@
+<!-- <!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+</head> -->
+
+[[extend 'layout.html']]
+
+<style>
+    [v-cloak] {
+        display: none;
+    }
+</style>
+
+<div class="section" id="vue-target" v-cloak>
+    <div class="tile is-ancestor">
+        <div class="tile is-parent">
+            <article class="tile is=child is-vertical notification is-dark has-text-centered">
+
+                <!-- needed buttons -->
+                <nav class="level p-2 mt-2 is-mobile  has-text-centered">
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <button @click="leave_lobby()" class="button is-danger">LEAVE LOBBY</button>
+                            <div class="heading p-2"> (Thanks for joining!)</div>
+                        </div>
+                    </div>
+                    <div class="level-item has-text-centered">
+                        <p class="title">IN LOBBY</p>
+                    </div>
+
+                    <!-- only display if leader -->
+                    <div v-if="leader_id == profile_id" class="level-item has-text-centered">
+                        <div>
+                            <button @click="close_lobby()" class="button is-success">CLOSE LOBBY</button>
+                            <div class="heading p-2"> (Please instruct all members to leave first)</div>
+                        </div>
+                    </div>
+                    <div v-else class="level-item has-text-centered">
+                        <p> Please exit before leader</p>
+                    </div>
+                </nav>
+
+                <div class="section is-mobile">
+                    <!-- loop over players here and generate tiles -->
+                    <div class="columns">
+                        <div v-for="m in misc" class="column">
+                            <!-- USE THIS AS THE TEMPLATE FOR v-for AND LOOPING-->
+                            <div class="box">
+                                <article class="media">
+                                    <div class="media-left">
+                                        <figure class="image is-64x64">
+                                            <img v-if="m.mic"
+                                                src="https://media.kingston.com/hyperx/product/hx-product-solocast-1-zm-lg.jpg"
+                                                alt="Image">
+                                            <img v-else="m.mic"
+                                                src="https://static.thenounproject.com/png/730126-200.png" alt="Image">
+                                        </figure>
+                                    </div>
+                                    <div class="media-content">
+                                        <div class="content">
+                                            <div v-if="m.gamertag" class="content">
+                                                <p class="heading"> {{m.rank}} </p>
+                                                <p class="title is-5 has-text-success-dark"> {{m.gamertag}}</p>
+                                                <p class="heading"> {{m.name}}</p>
+                                            </div>
+                                            <div v-else class="content">
+                                                <p class="heading"> Unavailable </p>
+                                                <p class="title is-5 has-text-danger-dark"> Empty</p>
+                                                <p class="heading"> waiting for players</p>
+                                            </div>
+
+                                            <div class="columns">
+                                                <div class="column">
+                                                    <span class="icon-text is-small">
+                                                        <span v-if="m.id != profile_id" @click="inc_tp(m._idx)" class="icon"> <i class="p-2 fa fa-handshake-o"></i>
+                                                            {{m.tiltproof}}
+                                                        </span>
+                                                        <span v-else class="icon"> <i class="p-2 fa fa-handshake-o"></i>
+                                                            {{m.tiltproof}}
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                                <div class="column">
+                                                    <span class="icon-text is-small">
+                                                        <span v-if="m.id != profile_id" @click="inc_lead(m._idx)" class="icon"> <i class="p-2 fa fa-users"></i>
+                                                            {{m.leader}}
+                                                        </span>
+                                                        <span v-else class="icon"> <i class="p-2 fa fa-users"></i>
+                                                            {{m.leader}}
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                                <div class="column">
+                                                    <span class="icon-text is-small">
+                                                        <span v-if="m.id != profile_id" @click="inc_fun(m._idx)" class="icon"> <i class="p-2 fa fa-thumbs-o-up"></i>
+                                                            {{m.fun}}
+                                                        </span>
+                                                        <span v-else class="icon"> <i class="p-2 fa fa-thumbs-o-up"></i>
+                                                            {{m.fun}}
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                                <div class="column">
+                                                    <span class="icon-text is-small">
+                                                        <span v-if="m.id != profile_id" @click="inc_com(m._idx)" class="icon"> <i class="p-2 fa fa-comments"></i>
+                                                            {{m.communicative}}
+                                                        </span>
+                                                        <span v-else class="icon"> <i class="p-2 fa fa-comments"></i>
+                                                            {{m.communicative}}
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- chat -->
+                    <div class="box">
+                        <div class="box" v-for="m in messages">
+                            <p class="has-text-left">
+                                <span v-if="m.user == profile_id" class="has-background-success-light"> {{m.name}}</span>
+                                <span v-else class="has-background-link-light"> {{m.name}}</span>
+                                <span>: {{m.message}} </span>
+                            </p>
+                        </div>
+                        <div class="field has-addons">
+                            <div class="control is-expanded">
+                                <input class="input" type="text" v-model="message" placeholder="Enter Message">
+                            </div>
+                            <div class="control">
+                                <a class="button is-info" @click="add_message">
+                                    Post
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </article>
+        </div>
+    </div>
+</div>
+
+[[block page_scripts]]
+<script>
+    let load_messages_url = "[[=XML(load_messages_url)]]";
+    let add_message_url = "[[=XML(add_message_url)]]";
+    let get_players_url = "[[=XML(get_players_url)]]";
+    let leave_lobby_url = "[[=XML(leave_lobby_url)]]";
+    let close_lobby_url = "[[=XML(close_lobby_url)]]";
+    let back_to_main_url = "[[=XML(back_to_main_url)]]";
+    let add_stats_url = "[[=XML(add_stats_url)]]";
+    let curr_id = "[[=XML(curr_id)]]"; // use in joined.js
+    let prof_id = "[[=XML(prof_id)]]"; // use in joined.js
+    let lead_id = "[[=XML(lead_id)]]";
+    console.log("the id is: ", curr_id);
+    console.log("curr prof id: ", prof_id);
+    console.log("leader id is: ", lead_id)
+
+</script>
+<script src="js/joined.js"></script>
+[[end]]
+
+<!-- <nav class="level">
+    <div class="level-item has-text-centered">
+        <div class="box">
+            <p class="heading"> Immortal</p>
+            <p class="title"> Alex Jones</p>
+        </div>
+    </div>
+    <div class="level-item has-text-centered">
+        <div class="box">
+            <p class="heading"> Gold 3</p>
+            <p class="title"> Sussy lil Baka</p>
+        </div>
+    </div>
+    <div class="level-item has-text-centered">
+        <div class="box">
+            <p class="heading"> Immortal</p>
+            <p class="title"> Zay</p>
+        </div>
+    </div>
+    <div class="level-item has-text-centered">
+        <div class="box">
+            <p class="heading"> Immortal </p>
+            <p class="title"> Big dong</p>
+        </div>
+    </div>
+    <div class="level-item has-text-centered">
+        <div class="box">
+            <p class="heading"> Silver </p>
+            <p class="title"> Testig</p>
+        </div>
+    </div>
+</nav> -->

@@ -1,0 +1,408 @@
+[[extend 'layout.html']]
+
+<style>
+[v-cloak] {
+        display: none;
+}
+.input {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+p {
+  margin-left: 10px;
+}
+b {
+  margin-left: 10px;
+}
+i {
+  margin-top: 20px;
+}
+.button {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+/* Popup container */
+.popup {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* The actual popup (appears on top) */
+.popup .popuptext {
+  visibility: hidden;
+  width: 160px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 0;
+  position: absolute;
+  z-index: 1;
+  top: 125%;
+  left: 50%;
+  margin-left: -75px;
+}
+
+/* Popup arrow */
+.popup .popuptext::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+/* Toggle this class when clicking on the popup container (hide and show the popup) */
+.popup .show {
+  visibility: visible;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity:1 ;}
+}
+</style>
+
+<div class="section" id="vue-target" v-cloak>
+    <div class="columns is-mobile">
+        <div class="column is-8 is-offset-2">
+          <p class="title" style="text-align: center;">View and Edit Your Profile</p>
+            <div class="columns is-mobile">
+              <div class="column">
+
+                <div class="field">
+                  <label class="label">First Name</label>
+                  <div v-if="!change_first_name_status">
+                    <div class="control has-icons-left">
+                      <input class="input" type="text" value="[[=user_info.first_name]]">
+                      <span class="icon is-small is-left">
+                        <i class="fa fa-address-book-o"></i>
+                      </span>
+                    </div>
+                    <div class="text-right">
+                      <button @click="set_first_name_status(true)" class="button is-primary">
+                        <i class="fa fa-pencil-square-o" style="margin-bottom: 20px;"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div v-else>
+                    <div class="control has-icons-left">
+                      <input class="input" v-model="change_first_name" type="text" placeholder="Enter a different first name here">
+                      <span class="icon is-small is-left">
+                        <i class="fa fa-address-book-o"></i>
+                      </span>
+                    </div>
+                    <div class="text-right">
+                      <button @click="set_first_name_status(false)" class="button is-danger">
+                        <i class="fa fa-times" style="margin-bottom: 20px;"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="label">Last Name</label>
+                  <div v-if="!change_last_name_status">
+                    <div class="control has-icons-left">
+                      <input class="input" type="text" value="[[=user_info.last_name]]">
+                      <span class="icon is-small is-left">
+                        <i class="fa fa-address-book-o"></i>
+                      </span>
+                    </div>
+                    <div class="text-right">
+                      <button @click="set_last_name_status(true)" class="button is-primary">
+                        <i class="fa fa-pencil-square-o" style="margin-bottom: 20px;"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div v-else>
+                    <div class="control has-icons-left">
+                      <input class="input" v-model="change_last_name" type="text" placeholder="Enter a different last name here">
+                      <span class="icon is-small is-left">
+                        <i class="fa fa-address-book-o"></i>
+                      </span>
+                    </div>
+                    <div class="text-right">
+                      <button @click="set_last_name_status(false)" class="button is-danger">
+                        <i class="fa fa-times" style="margin-bottom: 20px;"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="label">Bio</label>
+                  <div v-if="!add_bio_status">
+                    [[=profile_info.bio]]
+                    <div class="text-right">
+                      <button @click="set_add_bio_status(true)" class="button is-primary">
+                        <i class="fa fa-pencil-square-o" style="margin-bottom: 20px;"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div v-else>
+                    <textarea class="textarea" v-model="add_bio" placeholder="Enter your bio here..."></textarea>
+                    <div class="text-right">
+                      <button @click="set_add_bio_status(false)" class="button is-danger">
+                        <i class="fa fa-times" style="margin-bottom: 20px;"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="columns is-mobile">
+                  <div class="column">
+                    <label class="label">Region</label>
+                    <nav class="level is-mobile">
+                      <div class="level-left">
+                        <div class="level-item">
+                          <div class="field">
+                            <div v-if="!change_region_status">
+                              [[=profile_info.region]]
+                            </div>
+                            <div v-else>
+                              <div class="control has-icons-left">
+                                <div class="select">
+                                  <select v-model="change_region" >
+                                    <option disabled>Please Choose One</option>
+                                    <option>NA West</option>
+                                    <option>NA Central</option>
+                                    <option>NA East</option>
+                                  </select>
+                                </div>
+                                <span class="icon is-small is-left">
+                                  <i class="fa fa-globe" style="margin-bottom: 20px;"></i>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="level-item">
+                        <div v-if="!change_region_status">
+                          <button @click="set_region_status(true)" class="button is-primary" style="margin-bottom: 10px;">
+                            <i class="fa fa-toggle-on" style="margin-bottom: 20px;"></i>
+                          </button>
+                        </div>
+                        <div v-else>
+                          <button @click="set_region_status(false)" class="button is-danger" style="margin-bottom: 10px;">
+                            <i class="fa fa-times" style="margin-bottom: 20px;"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </nav>
+                  </div>
+                  <div class="column">
+                    <label class="label">Microphone</label>
+                    <nav class="level is-mobile">
+                      <div class="level-left">
+                        <div class="level-item">
+                          <div class="field">
+                            <div v-if="!change_mic_status">
+                              [[if profile_info.mic:]]On[[else:]]Off[[pass]]
+                            </div>
+                            <div v-else>
+                              <label class="radio">
+                                <input type="radio" value=true v-model="mic">
+                                On
+                              </label>
+                              <label class="radio">
+                                <input type="radio" value=false v-model="mic">
+                                Off
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="level-item">
+                        <div v-if="!change_mic_status">
+                          <button @click="set_mic_status(true)" class="button is-primary" style="margin-bottom: 10px;">
+                            <i class="fa fa-toggle-on" style="margin-bottom: 20px;"></i>
+                          </button>
+                        </div>
+                        <div v-else>
+                          <button @click="set_mic_status(false)" class="button is-danger" style="margin-bottom: 10px;">
+                            <i class="fa fa-times" style="margin-bottom: 20px;"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </nav>
+                  </div>
+                </div>
+                
+              </div>
+
+              <div class="column">
+
+                <nav class="level">
+                  <div class="popup" onclick="myFunction(myPopup1)">
+                    <div class="level-item has-text-centered">
+                      <div>
+                        <i class="fa fa-handshake-o" style="margin-left: 10px;"></i>
+                        <p class="title">[[=profile_info.tiltproof]]</p>
+                      </div>
+                    </div>
+                    <span class="popuptext" id="myPopup1">Number of times players have commeneded you for being tiltproof</span>
+                  </div>
+
+                  <div class="popup" onclick="myFunction(myPopup2)">
+                    <div class="level-item has-text-centered">
+                      <div>
+                        <i class="fa fa-users" style="margin-left: 10px;"></i>
+                        <p class="title">[[=profile_info.leader]]</p>
+                      </div>
+                    </div>
+                    <span class="popuptext" id="myPopup2">Number of times players have commeneded you for being a leader</span>
+                  </div>
+
+                  <div class="popup" onclick="myFunction(myPopup3)">
+                    <div class="level-item has-text-centered">
+                      <div>
+                        <i class="fa fa-thumbs-o-up" style="margin-left: 10px;"></i>
+                        <p class="title">[[=profile_info.fun]]</p>
+                      </div>
+                    </div>
+                    <span class="popuptext" id="myPopup3">Number of times players have commeneded you for being fun to play with</span>
+                  </div>
+
+                  <div class="popup" onclick="myFunction(myPopup4)">
+                    <div class="level-item has-text-centered">
+                      <div>
+                        <i class="fa fa-comments" style="margin-left: 10px;"></i>
+                        <p class="title">[[=profile_info.communicative]]</p>
+                      </div>
+                    </div>
+                    <span class="popuptext" id="myPopup4">Number of times players have commeneded you for being communicative</span>
+                  </div>
+                </nav>
+
+                <div v-if="add_game_status" class="container block">
+
+                  <div class="block">
+                    <div class="field">
+                      <div class="control">
+                        <label class="label">Choose Game</label>
+                        <div class="control has-icons-left">
+                          <div class="select" style="margin-top: 10px;">
+                            <select v-model="add_game_name">
+                              <option disabled>Please Choose One</option>
+                              <option>Valorant</option>
+                              <option>League of Legends</option>
+                              <option>CS:GO</option>
+                            </select>
+                          </div>
+                          <span class="icon is-small is-left">
+                            <i class="fa fa-gamepad"></i>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <div class="control">
+                      <label class="label">Add/Change Your Gamer Tag</label>
+                      <input class="input" v-model="add_gamertag" type="text" placeholder="Ex. thelegend27" style="margin-top: 20px;">
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <div class="control">
+                      <label class="label">Add/Change Your Rank In-Game</label>
+                      <input class="input" v-model="add_game_rank" type="text" placeholder="Ex. Gold 2">
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <div class="control">
+                      <input type="submit" @click="add_game" value="Add" class="button is-primary">
+                      <input type="submit" @click="set_add_game_status(false)" value="Cancel" class="button is-warning">
+                    </div>
+                  </div>
+
+                </div>
+
+                <div v-else class="container block">
+
+                  <div class="field">
+                    <div class="control has-icons-left">
+                      <div class="text-center">
+                        <input @click="set_add_game_status(true)" type="submit" value="Add or Edit One of Your Games!" class="button is-primary">
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="container block">
+                  <div v-for="r in rows">
+                    <div class="box">
+                      <div class="block">
+                        <label class="label">Game</label>
+                        {{r.game}}
+                      </div>
+                      <div class="block">
+                        <label class="label">Gamertag in {{r.game}}</label>
+                        {{r.gamertag}}
+                      </div>
+                      <div class="block">
+                        <label class="label">Rank in {{r.game}}</label>
+                        {{r.rank}}
+                      </div>
+                    </div>
+                    <div class="block">
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <div class="text-center">
+                        <a @click="change_profile" href="[[=URL('index')]]" class="button is-danger">
+                          Submit All Changes
+                      </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+[[block page_scripts]]
+
+<script>
+  let change_profile_url = "[[=XML(change_profile_url)]]";
+  let add_game_url = "[[=XML(add_game_url)]]";
+  let load_games_url = "[[=XML(load_games_url)]]";
+
+  function myFunction(myPopup) {
+    var id = String(myPopup.id)
+    var popup = document.getElementById(id);
+    popup.classList.toggle("show");
+  }
+</script>
+<script src="js/profile.js">
+</script>
+[[end]]

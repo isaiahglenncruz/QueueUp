@@ -1,0 +1,171 @@
+<!-- <!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+</head> -->
+
+[[extend 'layout.html']]
+
+<style>
+    [v-cloak] {
+        display: none;
+    }
+</style>
+
+<div class="section" id="vue-target" v-cloak>
+    <!-- HEADER CODE -->
+    <nav class="level p-2 mt-2 is-mobile">
+        <div class="level-item"></div>
+        <div class="level-item has-text-centered">
+            <div>
+                <figure class="image is-128x128">
+                    <img class="is-rounded"
+                        src="https://lh3.googleusercontent.com/d/1oXZhuGX3cZcWJtApjzQDu-PF9banLRqj=s220?authuser=0">
+                </figure>
+            </div>
+        </div>
+        <div class="level-item has-text-centered">
+            <div class="title is-2 has-text-centered">
+                <p>In Valorant Queue</p>
+            </div>
+        </div>
+        <div class="level-item has-text-centered">
+            <button @click="set_add_status(true)" class="button is-success">Create New Lobby</button>
+        </div>
+        <div class="level-item"></div>
+    </nav>
+
+    <!-- ADD LOBBY FORM -->
+    <div v-if="add_new_lobby" class="container block">
+        <div class="title"> Add Lobby</div>
+        <div class="form">
+            <div class="field">
+                <label class="label"> Game </label>
+                <div class="control">
+                    <div class="select">
+                        <select v-model="add_game">
+                            <option disabled>Add a game to your profile or choose from below</option>
+                            <option v-for="p in playable">{{p}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label"> Rank </label>
+                <div class="control">
+                    <input type="text" v-model="add_rank" class="input">
+                </div>
+            </div>
+            <div class="field">
+                <label class="label"> Region </label>
+                <div class="control">
+                    <!-- <input type="text" v-model="add_region" class="input"> -->
+                    <div class="select">
+                        <select v-model="add_region">
+                            <option disabled> Please choose one</option>
+                            <option> NA West</option>
+                            <option> NA East</option>
+                            <option> NA Central</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label"> Playstyle </label>
+                <div class="control">
+                    <!-- <input type="text" v-model="add_playstyle" class="input"> -->
+                    <div class="select">
+                        <select v-model="add_playstyle">
+                            <option disabled> Please choose one</option>
+                            <option> Competitive</option>
+                            <option> Casual</option>
+                            <option> Goofy</option>
+                            <option> Chill</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label"> Bio </label>
+                <div class="control">
+                    <input type="text" v-model="add_bio" class="input">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input type="submit" @click="add_lobby" value="Add" class="button is-primary">
+                    <input type="submit" @click="set_add_status(false)" value="Cancel" class="button is-warning">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- LOBBY CODE -->
+    <div class="block m-2 mx-4 p-2">
+        <div class="columns is-multiline is-desktop">
+            <!-- FOR LOOP -- CREATE COL AND TILE -->
+            <div v-if="lobbies.length == 0" class="container">
+                <div class="title has-text-centered">
+                    <span> No Open Lobbies! Please Create One</span>
+                </div>
+            </div>
+            <div v-for="l in lobbies.slice().reverse()" class="column is-one-third">
+                <div class="tile is-ancestor">
+                    <div class="tile is-parent is-vertical">
+                        <div class="tile is-child notification is-dark">
+                            <p class="title" style="text-align: center;">{{l.game}}</p>
+                            <p class="title is-5" style="text-align: center;"> Leader: {{l.leader}}</p>
+                            <p class="subtitle" style="text-align: center;">Rank: {{l.rank}}</p>
+                            <div style="text-align: center">
+                                <a v-if="l.player1 && l.player2 && l.player3 && l.player4" class="button is-info">LOBBY FULL!</a>
+                                <a v-else-if="playable.includes(l.game)" class="button is-danger" :href="l.show_url">JOIN LOBBY</a>
+                                <a v-else class="button is-warning">ADD {{l.game}} TO PROFILE FIRST</a>
+                            </div>
+                            <div class="m-2 p-2">
+                                <p class="subtitle" style="text-align: center;">MEMBERS</p>
+                                <div class="block">
+                                    <table class="table is-fullwidth">
+                                        <tr>
+                                            <th v-if="l.player1"> 1: {{l.player1}} </th>
+                                            <th v-else> 1: available</th>
+                                            <th v-if="l.player2"> 2: {{l.player2}} </th>
+                                            <th v-else> 2: available</th>
+                                        </tr>
+                                        <tr>
+                                            <th v-if="l.player3"> 3: {{l.player3}} </th>
+                                            <th v-else> 3: available</th>
+                                            <th v-if="l.player4"> 4: {{l.player4}} </th>
+                                            <th v-else> 4: available</th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="block">
+                                <p class="subtitle pt-1" style="text-align: center;">
+                                    <span>{{l.region}}</span> : <span>{{l.playstyle}}</span>
+                                </p>
+                                <p class="subtitle" style="text-align: center;">{{l.bio}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+[[block page_scripts]]
+<script>
+    let add_lobby_url = "[[=XML(add_lobby_url)]]";
+    let load_lobbies_url = "[[=XML(load_lobbies_url)]]";
+
+</script>
+<script src="js/lobbies.js"></script>
+[[end]]

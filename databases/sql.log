@@ -1,0 +1,76 @@
+timestamp: 2021-06-07T23:04:10.451642
+CREATE TABLE "py4web_session"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "rkey" CHAR(512),
+    "rvalue" TEXT,
+    "expiration" INTEGER,
+    "created_on" TIMESTAMP,
+    "expires_on" TIMESTAMP
+);
+success!
+timestamp: 2021-06-07T23:04:10.456624
+CREATE TABLE "auth_user"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "email" CHAR(512) UNIQUE,
+    "password" CHAR(512),
+    "first_name" CHAR(512),
+    "last_name" CHAR(512),
+    "sso_id" CHAR(512),
+    "action_token" CHAR(512),
+    "last_password_change" TIMESTAMP,
+    "past_passwords_hash" TEXT
+);
+success!
+timestamp: 2021-06-07T23:04:10.460423
+CREATE TABLE "auth_user_tag_groups"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "path" CHAR(512),
+    "record_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  
+);
+success!
+timestamp: 2021-06-07T23:04:10.501206
+CREATE TABLE "profiles"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "user" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "region" CHAR(512),
+    "bio" CHAR(512),
+    "mic" CHAR(1),
+    "tiltproof" INTEGER,
+    "leader" INTEGER,
+    "fun" INTEGER,
+    "communicative" INTEGER
+);
+success!
+timestamp: 2021-06-07T23:04:10.505073
+CREATE TABLE "game_data"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "profile" INTEGER REFERENCES "profiles" ("id") ON DELETE CASCADE  ,
+    "game" CHAR(512),
+    "gamertag" CHAR(512),
+    "rank" CHAR(512)
+);
+success!
+timestamp: 2021-06-07T23:04:10.508746
+CREATE TABLE "lobbies"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "game" CHAR(512),
+    "leader" INTEGER REFERENCES "profiles" ("id") ON DELETE CASCADE  ,
+    "bio" CHAR(512),
+    "player1" INTEGER REFERENCES "profiles" ("id") ON DELETE CASCADE  ,
+    "player2" INTEGER REFERENCES "profiles" ("id") ON DELETE CASCADE  ,
+    "player3" INTEGER REFERENCES "profiles" ("id") ON DELETE CASCADE  ,
+    "player4" INTEGER REFERENCES "profiles" ("id") ON DELETE CASCADE  ,
+    "rank" CHAR(512),
+    "region" CHAR(512),
+    "playstyle" CHAR(512)
+);
+success!
+timestamp: 2021-06-07T23:04:10.512325
+CREATE TABLE "messages"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "lobby" INTEGER REFERENCES "lobbies" ("id") ON DELETE CASCADE  ,
+    "user" INTEGER REFERENCES "profiles" ("id") ON DELETE CASCADE  ,
+    "name" CHAR(512),
+    "message" CHAR(512)
+);
+success!
