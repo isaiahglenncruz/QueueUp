@@ -1,31 +1,34 @@
 [[extend 'layout.html']]
 
-<section class="hero is-fullheight is-default is-bold">
-    <div class="hero-body">
-        <div class="container has-text-centered">
-            <div class="columns is-vcentered">
-                <div class="column is-5">
-                    <figure class="image">
-                        <img class="is-rounded"
-                            src="https://drive.google.com/thumbnail?id=1ijZHvfT_vnazSPr7pKlxmTGpYO3KoMxQ">
-                    </figure>
-                </div>
-                <div class="column is-6 is-offset-1">
-                    <h1 class="title is-2 is-family-sans-serif">
-                        Welcome to QueueUp
-                    </h1>
-                    <h2 class="subtitle is-4 is-family-sans-serif">
-                        Ready to game? Log in and jump right in to find some teammates!
-                    </h2>
-                    <br>
-                    <p class="has-text-centered">
-                        <a href="[[=URL('lobbies')]]"
-                            class="button is-medium is-danger is-outlined is-family-sans-serif">
-                            Find a Lobby
-                        </a>
-                    </p>
+<div>
+    <section class="hero is-fullheight is-default is-bold">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <div class="columns is-vcentered">
+                    <div class="column is-5">
+                        <figure class="image">
+                            <img class="is-rounded"
+                                src="https://drive.google.com/thumbnail?id=1ijZHvfT_vnazSPr7pKlxmTGpYO3KoMxQ">
+                        </figure>
+                    </div>
+                    <div class="column is-6 is-offset-1">
+                        <h1 class="title is-2">Welcome to QueueUp</h1>
+                        <h2 class="subtitle is-4">Ready to game? Log in and jump right in to find some teammates!</h2>
+                        <br>
+                        <p class="has-text-centered">
+                            [[if profile_info:]]
+                            <a href="[[=URL('lobbies')]]" class="button is-medium is-danger is-outlined">
+                                Find a Lobby
+                            </a>
+                            [[else:]]
+                            <a href="[[=URL('profile')]]" class="button is-medium is-danger is-outlined">
+                                Edit Your Profile First
+                            </a>
+                            [[pass]]
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+</div>

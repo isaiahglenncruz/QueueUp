@@ -14,14 +14,17 @@ let init = (app) => {
         add_game_name: "",
         add_gamertag: "",
         add_game_rank: "",
-        change_email: "",
         change_first_name: "",
+        change_first_name_status: false,
         change_last_name: "",
+        change_last_name_status: false,
         change_region: "",
+        change_region_status: false,
         mic: "",
+        change_mic_status: false,
         add_bio: "",
-        profile: [],
-        game_data: [],
+        add_bio_status: false,
+        rows: [],
     };
 
     app.enumerate = (a) => {
@@ -34,7 +37,6 @@ let init = (app) => {
     app.change_profile = function () {
         console.log("changing profile");
         axios.post(change_profile_url, {
-            email: app.vue.change_email,
             first_name: app.vue.change_first_name,
             last_name: app.vue.change_last_name,
             region: app.vue.change_region,
@@ -43,7 +45,6 @@ let init = (app) => {
         }).then(function (response) {
         app.vue.profile.push({
             id: response.data.id,
-            email: app.vue.change_email,
             first_name: app.vue.change_first_name,
             last_name: app.vue.change_last_name,
             region: app.vue.change_region,
@@ -58,6 +59,27 @@ let init = (app) => {
         app.vue.add_game_status = new_status;
     };
 
+    app.set_add_bio_status = function (new_status) {
+        app.vue.add_bio_status = new_status;
+    };
+
+    app.set_first_name_status = function (new_status) {
+        app.vue.change_first_name_status = new_status;
+    };
+
+    app.set_last_name_status = function (new_status) {
+        app.vue.change_last_name_status = new_status;
+    };
+
+    app.set_region_status = function (new_status) {
+        app.vue.change_region_status = new_status;
+    };
+
+    app.set_mic_status = function (new_status) {
+        app.vue.change_mic_status = new_status;
+    };
+
+
     app.add_game = function () {
         console.log("adding a game");
         axios.post(add_game_url, {
@@ -65,14 +87,26 @@ let init = (app) => {
             gamertag: app.vue.add_gamertag,
             rank: app.vue.add_game_rank,
         }).then(function (response) {
-        app.vue.game_data.push({
+        app.vue.rows.push({
             id: response.data.id,
             game: app.vue.add_game_name,
             gamertag: app.vue.add_gamertag,
             rank: app.vue.add_game_rank,
         });
-            app.enumerate(app.vue.game_data);
+            app.enumerate(app.vue.rows);
         });
+        app.set_add_game_status(false);
+        app.delete_dupe(app.vue.add_game_name);
+    };
+
+    app.delete_dupe = function (game) {
+        for (let i = 0; i < app.vue.rows.length; i++) {
+            if (app.vue.rows[i].game == game) {
+                app.vue.rows.splice(i, 1);
+                app.enumerate(app.vue.rows);
+                break;
+            }
+        }
     };
 
     // This contains all the methods.
@@ -80,7 +114,13 @@ let init = (app) => {
         // Complete as you see fit.
         change_profile: app.change_profile,
         set_add_game_status: app.set_add_game_status,
+        set_add_bio_status: app.set_add_bio_status,
+        set_first_name_status: app.set_first_name_status,
+        set_last_name_status: app.set_last_name_status,
+        set_region_status: app.set_region_status,
+        set_mic_status: app.set_mic_status,
         add_game: app.add_game,
+        delete_dupe: app.delete_dupe,
     };
 
     // This creates the Vue instance.
@@ -94,6 +134,11 @@ let init = (app) => {
     app.init = () => {
         // Put here any initialization code.
         // Typically this is a server GET call to load the data.
+        axios.get(load_games_url).then((result) => {
+            let rows = result.data.rows;
+            app.enumerate(rows);
+            app.vue.rows = rows;
+        });
     };
 
     // Call to the initializer.

@@ -23,15 +23,6 @@ def get_user():
 #
 ## always commit your models to avoid problems later
 
-# db.define_table(
-#     'users',
-#     Field('email', default=get_user_email),
-#     Field('name'),
-#     Field('social_elo', 'integer', default=0),
-#     Field('region'),
-#     Field('microphone', 'boolean', default=False),
-#     Field('dob'),
-# )
 
 db.define_table(
     'profiles',

@@ -14,8 +14,10 @@ let init = (app) => {
         add_rank: "",      // Should be grabbed by default soon
         add_region: "",     // Should be grabbed by default soon
         add_playstyle:  "", 
+        add_game: "",
         add_bio: "",
         lobbies: [],
+        playable: [],
     };
 
     app.enumerate = (a) => {
@@ -30,6 +32,7 @@ let init = (app) => {
         app.vue.add_region = "";
         app.vue.add_playstyle = "";
         app.vue.add_bio = "";
+        app.vue.add_game = "";
     };
 
     app.complete = (lobbies) => {
@@ -55,6 +58,7 @@ let init = (app) => {
             region: app.vue.add_region,
             playstyle: app.vue.add_playstyle,
             bio: app.vue.add_bio,
+            game: app.vue.add_game,
         }).then(function (response) {
         console.log(response.data.leader);
         app.vue.lobbies.push({
@@ -66,6 +70,7 @@ let init = (app) => {
             region: app.vue.add_region,
             playstyle: app.vue.add_playstyle,
             bio: app.vue.add_bio,
+            game: app.vue.add_game,
         });
             app.enumerate(app.vue.lobbies);
             app.reset_form();
@@ -102,6 +107,7 @@ let init = (app) => {
             app.enumerate(lobbies);
             app.complete(lobbies);
             app.vue.lobbies = lobbies;
+            app.vue.playable = response.data.playable;
         });
     };
 

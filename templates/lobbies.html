@@ -45,6 +45,17 @@
         <div class="title"> Add Lobby</div>
         <div class="form">
             <div class="field">
+                <label class="label"> Game </label>
+                <div class="control">
+                    <div class="select">
+                        <select v-model="add_game">
+                            <option disabled>Add a game to your profile or choose from below</option>
+                            <option v-for="p in playable">{{p}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
                 <label class="label"> Rank </label>
                 <div class="control">
                     <input type="text" v-model="add_rank" class="input">
@@ -53,13 +64,30 @@
             <div class="field">
                 <label class="label"> Region </label>
                 <div class="control">
-                    <input type="text" v-model="add_region" class="input">
+                    <!-- <input type="text" v-model="add_region" class="input"> -->
+                    <div class="select">
+                        <select v-model="add_region">
+                            <option disabled> Please choose one</option>
+                            <option> NA West</option>
+                            <option> NA East</option>
+                            <option> NA Central</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div class="field">
                 <label class="label"> Playstyle </label>
                 <div class="control">
-                    <input type="text" v-model="add_playstyle" class="input">
+                    <!-- <input type="text" v-model="add_playstyle" class="input"> -->
+                    <div class="select">
+                        <select v-model="add_playstyle">
+                            <option disabled> Please choose one</option>
+                            <option> Competitive</option>
+                            <option> Casual</option>
+                            <option> Goofy</option>
+                            <option> Chill</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div class="field">
@@ -91,10 +119,13 @@
                 <div class="tile is-ancestor">
                     <div class="tile is-parent is-vertical">
                         <div class="tile is-child notification is-dark">
-                            <p class="title" style="text-align: center;">{{l.leader}}</p>
-                            <p class="subtitle" style="text-align: center;">{{l.rank}}</p>
+                            <p class="title" style="text-align: center;">{{l.game}}</p>
+                            <p class="title is-5" style="text-align: center;"> Leader: {{l.leader}}</p>
+                            <p class="subtitle" style="text-align: center;">Rank: {{l.rank}}</p>
                             <div style="text-align: center">
-                                <a class="button is-danger" :href="l.show_url">JOIN LOBBY</a>
+                                <a v-if="l.player1 && l.player2 && l.player3 && l.player4" class="button is-info">LOBBY FULL!</a>
+                                <a v-else-if="playable.includes(l.game)" class="button is-danger" :href="l.show_url">JOIN LOBBY</a>
+                                <a v-else class="button is-warning">ADD {{l.game}} TO PROFILE FIRST</a>
                             </div>
                             <div class="m-2 p-2">
                                 <p class="subtitle" style="text-align: center;">MEMBERS</p>
@@ -130,47 +161,10 @@
 </div>
 
 
-
-<!-- <div class="block m-2 mx-4 p-2">
-        <div class="tile is-ancestor">
-            <div class="tile is-parent is-vertical is-4">
-                <div class="tile is-child notification is-dark">
-                    <p class="title" style="text-align: center;">{{l.leader}}</p>
-                    <p class="subtitle" style="text-align: center;">{{l.rank}}</p>
-                    <div style="text-align: center">
-                        <article class="button is-danger">JOIN LOBBY</button>
-                    </div>
-                    <div class="m-2 p-2">
-                        <p class="subtitle" style="text-align: center;">MEMBERS</p>
-                        <div class="block">
-                            <table class="table is-fullwidth">
-                                <tr>
-                                    <th> {{l.player1}} </th>
-                                    <th> {{l.player2}} </th>
-                                </tr>
-                                <tr>
-                                    <th> {{l.player3}} </th>
-                                    <th> {{l.player4}} </th>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="block">
-                        <p class="subtitle pt-1" style="text-align: center;">
-                            <span>{{l.region}}</span> : <span>{{l.playstyle}}</span>
-                        </p>
-                        <p class="subtitle" style="text-align: center;">{{l.bio}}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
-
 [[block page_scripts]]
 <script>
     let add_lobby_url = "[[=XML(add_lobby_url)]]";
     let load_lobbies_url = "[[=XML(load_lobbies_url)]]";
-    let get_players_url = "[[=XML(get_players_url)]]";
 
 </script>
 <script src="js/lobbies.js"></script>
